@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--基于接口中的方法,编写SQL映射-->
+<mapper namespace="top.haha233.smbms.dal.UserMapper">
+    <!--接口中每一个方法，对应着一个映射-->
+    <!--映射接口里的add方法,添加用户-->
+    <!--insert节点里,编写insert语句-->
+    <!--id的属性值不能随意赋值,要和接口里的方法名一致-->
+    <!--parameterType:参数的类型 是一个对象-->
+    <!--#{属性名} 到参数对象中取对应属性名的值-->
+    <insert id="add" parameterType="UserPo">
+        INSERT INTO smbms_user (userCode, userName, userPassword, gender)
+        VALUES
+            (#{userCode}, #{userName}, #{userPassword}, #{gender})
+    </insert>
+    <update id="modify" parameterType="UserPo">
+        UPDATE smbms_user
+        SET userName = #{userName}, userPassword = #{userPassword}
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM smbms_user
+        WHERE id = #{id}
+    </delete>
+    <!--查询用户记录数-->
+    <select id="count" resultType="Integer">
+        SELECT count(id)
+        FROM smbms_user;
+    </select>
+    <select id="queryUser" resultType="UserBo">
+        SELECT
+            id,
+            userName
+        FROM smbms_user
+    </select>
+    <!--<select id="queryUserByName" resultType="UserBo" parameterType="String">-->
+    <!--select id,userName-->
+    <!--from smbms_user WHERE userName LIKE concat(#{name},'%');-->
+    <!--</select>-->
+    <!--<select id="queryUserByName" resultType="UserBo" parameterType="String">-->
+    <!--<bind name="fuck" value="_parameter + '%' "/>-->
+    <!--select id,userName-->
+    <!--from smbms_user WHERE userName LIKE #{fuck};-->
+    <!--</select>-->
+    <select id="queryUserByName" resultType="UserBo" parameterType="String">
+        SELECT
+            id,
+            userName
+        FROM smbms_user
+        WHERE userName LIKE "%"#{name}"%";
+    </select>
+
+    <resultMap id="userList" type="UserBo">
+        <id property="id" column="id"/>
+        <result column="userName" property="userName"/>
+        <result column="userCode" property="userCode"/>
+        <result column="userPassword" property="userPassword"/>
+        <result column="gender" property="gender"/>
+        <association property="userRole" javaType="RoleBo"
+                     resultMap="roleResult"/>
+    </resultMap>
+    <resultMap type="RoleBo" id="roleResult">
+        <id property="id" column="r_id"/>
+        <result column="roleCode" property="roleCode"/>
+        <result column="roleName" property="roleName"/>
+    </resultMap>
+    <select id="queryRListByName" resultMap="userList" parameterType="String">
+        SELECT
+            user.id id,
+            userCode,
+            userName,
+            userPassword,
+            gender,
+            role.id r_id,
+            roleCode,
+            roleName
+        FROM smbms_user AS user
+            JOIN smbms_role AS role
+                ON role.id = user.userRole
+        WHERE user.userName LIKE #{name} "%";
+    </select>
+
+    <resultMap id="userAddressResult" type="UserBo">
+        <id property="id" column="id"/>
+        <result column="userName" property="userName"/>
+        <result column="userCode" property="userCode"/>
+        <result column="userPassword" property="userPassword"/>
+        <result column="gender" property="gender"/>
+        <collection property="addressList" ofType="AddressBo"
+                    resultMap="addressResult"/>
+    </resultMap>
+    <resultMap id="addressResult" type="AddressBo">
+        <id column="a_id" property="id"/>
+        <result property="postCode" column="postCode"/>
+        <result property="tel" column="tel"/>
+        <result property="contact" column="contact"/>
+        <result property="addressDesc" column="addressDesc"/>
+    </resultMap>
+
+    <select id="queryUserAddressByUserId" resultMap="userAddressResult">
+        SELECT
+            u.id id,
+            userCode,
+            userName,
+            userPassword,
+            gender,
+            a.id a_id,
+            contact,
+            addressDesc,
+            postCode,
+            tel
+        FROM smbms_user u INNER JOIN smbms_address a
+                ON u.id = a.userid
+        WHERE u.id = #{id};
+    </select>
+</mapper>
