@@ -29,15 +29,18 @@ public class RoleServiceImpl implements RoleService {
 			roles = sqlSession.getMapper(RoleMapper.class).queryAllRole();
 			sqlSession.commit();
 		} catch (Exception e) {
+	//mybatis异常 3
 			e.printStackTrace();
 			sqlSession.rollback();
+			MyBatisUtil.closeSqlSession(sqlSession);
+			return new Response(3);
 		} finally {
 			//释放资源
 			MyBatisUtil.closeSqlSession(sqlSession);
 		}
-		// 不存在时返回
+		// 不存在时返回 4
 		if (roles == null) {
-			return new Response(3);
+			return new Response(4);
 		}
 
 		// 返回

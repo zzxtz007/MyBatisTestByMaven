@@ -5,6 +5,7 @@ import top.haha233.smbms.dal.UserMapper;
 import top.haha233.smbms.model.bo.UserBo;
 import top.haha233.smbms.model.po.UserPo;
 import top.haha233.smbms.service.UserService;
+import top.haha233.smbms.util.Response;
 import top.haha233.smbms.utils.MyBatisUtil;
 
 import java.util.List;
@@ -15,7 +16,11 @@ import java.util.List;
  */
 public class UserServiceImpl implements UserService {
 	@Override
-	public Integer add(UserPo user) {
+	public Response add(UserPo user) {
+		// 含空值时返回
+		if (user==null) {
+			return new Response(2);
+		}
 		//mybatis去操作数据库
 		SqlSession sqlSession ;
 		sqlSession= MyBatisUtil.createSqlSession();
@@ -26,16 +31,22 @@ public class UserServiceImpl implements UserService {
 		}catch (Exception e){
 			e.printStackTrace();
 			sqlSession.rollback();
+			MyBatisUtil.closeSqlSession(sqlSession);
+			return new Response(1);
 		}
 		finally {
 			//释放资源
 			MyBatisUtil.closeSqlSession(sqlSession);
 		}
-		return count;
+		return new Response(0).add("ret",count);
 	}
 
 	@Override
-	public Integer delete(UserPo u) {
+	public Response delete(UserPo u) {
+		// 含空值时返回
+		if (u==null) {
+			return new Response(2);
+		}
 		//mybatis去操作数据库
 		SqlSession sqlSession ;
 		sqlSession= MyBatisUtil.createSqlSession();
@@ -46,118 +57,44 @@ public class UserServiceImpl implements UserService {
 		}catch (Exception e){
 			e.printStackTrace();
 			sqlSession.rollback();
+			MyBatisUtil.closeSqlSession(sqlSession);
+			return new Response(1);
 		}
 		finally {
 			//释放资源
 			MyBatisUtil.closeSqlSession(sqlSession);
 		}
-		return count;
+		return new Response(0).add("ret",count);
 	}
 
 	@Override
-	public Integer count() {
+	public Response count() {
+		return null;
+	}
+
+	public Response count(UserPo u) {
+		// 含空值时返回
+		if (u==null) {
+			return new Response(2);
+		}
 		//mybatis去操作数据库
 		SqlSession sqlSession ;
 		sqlSession= MyBatisUtil.createSqlSession();
 		Integer count = 0;
 		try {
-			count = sqlSession.getMapper(UserMapper.class).count();
+			count = sqlSession.getMapper(UserMapper.class).count(u);
 			sqlSession.commit();
 		}catch (Exception e){
 			e.printStackTrace();
 			sqlSession.rollback();
+			MyBatisUtil.closeSqlSession(sqlSession);
+			return new Response(1);
 		}
 		finally {
 			//释放资源
 			MyBatisUtil.closeSqlSession(sqlSession);
 		}
-		return count;
+		return new Response(0).add("ret",count);
 	}
 
-	@Override
-	public List<UserBo> queryAll() {
-		List<UserBo> users = null;
-		//mybatis去操作数据库
-		SqlSession sqlSession ;
-		sqlSession= MyBatisUtil.createSqlSession();
-		try {
-			users = sqlSession.getMapper(UserMapper.class).queryUser();
-			sqlSession.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			sqlSession.rollback();
-		}
-		finally {
-			//释放资源
-			MyBatisUtil.closeSqlSession(sqlSession);
-		}
-		return users;
-	}
-
-	@Override
-	public List<UserBo> queryAllByName(String userName) {
-		List<UserBo> users = null;
-		//mybatis去操作数据库
-		SqlSession sqlSession ;
-		sqlSession= MyBatisUtil.createSqlSession();
-		try {
-			users = sqlSession.getMapper(UserMapper.class).queryUserByName(userName);
-			sqlSession.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			sqlSession.rollback();
-		}
-		finally {
-			//释放资源
-			MyBatisUtil.closeSqlSession(sqlSession);
-		}
-		return users;
-	}
-
-	@Override
-	public List<UserBo> queryRListByName(String userName) {
-		List<UserBo> users = null;
-		//mybatis去操作数据库
-		SqlSession sqlSession;
-		sqlSession= MyBatisUtil.createSqlSession();
-		try {
-			users = sqlSession.getMapper(UserMapper.class).queryRListByName(userName);
-			sqlSession.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			sqlSession.rollback();
-		}
-		finally {
-			//释放资源
-			MyBatisUtil.closeSqlSession(sqlSession);
-		}
-		return users;
-	}
-
-	@Override
-	public List<UserBo> queryUserAddressByUserId(String id) {
-		List<UserBo> users = null;
-		Integer uid= 0;
-		try {
-			uid = Integer.parseInt(id);
-		}catch (Exception e){
-			e.printStackTrace();
-
-		}
-		//mybatis去操作数据库
-		SqlSession sqlSession;
-		sqlSession= MyBatisUtil.createSqlSession();
-		try {
-			users = sqlSession.getMapper(UserMapper.class).queryUserAddressByUserId(uid);
-			sqlSession.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			sqlSession.rollback();
-		}
-		finally {
-			//释放资源
-			MyBatisUtil.closeSqlSession(sqlSession);
-		}
-		return users;
-	}
 }

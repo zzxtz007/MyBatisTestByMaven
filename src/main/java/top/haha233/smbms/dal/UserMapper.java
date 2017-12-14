@@ -1,5 +1,6 @@
 package top.haha233.smbms.dal;
 
+import org.apache.ibatis.annotations.Param;
 import top.haha233.smbms.model.bo.UserBo;
 import top.haha233.smbms.model.po.UserPo;
 
@@ -17,7 +18,7 @@ public interface UserMapper {
 	 * @param user
 	 * @return
 	 */
-	Integer add(UserPo user);
+	int add(UserPo user);
 
 	/**
 	 * 修改用户方法
@@ -25,7 +26,7 @@ public interface UserMapper {
 	 * @param user
 	 * @return
 	 */
-	Integer modify(UserPo user);
+	int modify(UserPo user);
 
 	/**
 	 * 删除用户方法
@@ -33,49 +34,21 @@ public interface UserMapper {
 	 * @param id
 	 * @return
 	 */
-	Integer delete(Integer id);
+	int delete(Integer id);
 
 	/**
 	 * 查询用户数量
-	 *
+	 * @param condition
 	 * @return
 	 */
-	Integer count();
+	int count(@Param("condition") UserPo condition);
 
-	/**
-	 * 无条件模糊查询
-	 *
+	/**根据用户的情况查询用户
+	 * @param condition
+	 * @param startIndex
+	 * @param count
 	 * @return
 	 */
-	List<UserBo> queryUser();
-
-	/**
-	 * 查询用户 根据名字
-	 *
-	 * @param name
-	 * @return
-	 */
-	List<UserBo> queryUserByName(String name);
-
-	/**
-	 * 查询用户 根据各种信息
-	 *
-	 * @param user
-	 * @return
-	 */
-	List<UserBo> queryUserByObject(UserPo user);
-
-	/**
-	 * 查询用户和role 根据各种信息
-	 * @param name
-	 * @return
-	 */
-	List<UserBo> queryRListByName(String name);
-
-	/**
-	 * 查询用户的地址 根据各种用户id
-	 * @param id
-	 * @return
-	 */
-	List<UserBo> queryUserAddressByUserId(Integer id);
+	List<UserBo> list(@Param("condition") UserPo condition, @Param("startIndex") Integer startIndex,
+			@Param("count") Integer count);
 }

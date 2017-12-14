@@ -3,7 +3,7 @@ package top.haha233.smbms.model.bo;
 import java.util.Date;
 
 public class RoleBo {
-	private int id;
+	private Integer id;
 	private String roleCode;
 	private String roleName;
 	private UserBo createBy;
@@ -11,12 +11,16 @@ public class RoleBo {
 	private UserBo modifyBy;
 	private Date modifyDate;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public UserBo getModifyBy() {
+		return modifyBy;
 	}
 
 	public String getRoleCode() {

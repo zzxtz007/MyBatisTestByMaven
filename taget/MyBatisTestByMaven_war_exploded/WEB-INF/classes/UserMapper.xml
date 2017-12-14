@@ -54,7 +54,7 @@
             roleCode,
             roleName
         FROM smbms_user u
-            LEFT JOIN smbms_role r
+            INNER JOIN smbms_role r
                 ON u.userRole = r.id
     </sql>
     <sql id="generic-where">

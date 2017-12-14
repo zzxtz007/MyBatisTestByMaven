@@ -1,22 +1,17 @@
 package top.haha233.smbms.service;
 
-import top.haha233.smbms.model.bo.UserBo;
 import top.haha233.smbms.model.po.UserPo;
+import top.haha233.smbms.util.Response;
 
-import java.util.List;
 
+/**
+ * @author Ice_Dog
+ */
 public interface UserService {
-	Integer add(UserPo user);
+	Response add(UserPo user);
 
-	Integer delete(UserPo u);
+	Response delete(UserPo u);
 
-	Integer count();
+	Response count();
 
-	List<UserBo> queryAll();
-
-	List<UserBo> queryAllByName(String userName);
-
-	List<UserBo> queryRListByName(String userName);
-
-	List<UserBo> queryUserAddressByUserId(String id);
 }
