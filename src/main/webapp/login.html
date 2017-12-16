@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<link href="css/md-ui.css" rel="stylesheet">
+	<link href="css/main.css" rel="stylesheet">
+</head>
+<body>
+<div>
+	<input class="md-ui" type="text" title="用户名" id="userCode">
+	<input class="md-ui" type="password" title="密码" id="passWord">
+	<button class="md-ui" onclick="login()">登录</button>
+</div>
+
+<div id="msg-box" class="msg-hide"></div>
+<script src="js/jquery3.1.js"></script>
+<script src="js/md-ui.js"></script>
+<script src="js/generic.js"></script>
+<script>
+    var mi = new MdUi();
+    mi.init();
+
+    function login() {
+		var userCode = $("#userCode").val();
+		var passWord = $("#passWord").val();
+        console.log(userCode,passWord);
+        $.ajax({
+	        url:"/api/user/login",
+	        type:"post",
+	        data:{
+	            "userCode":userCode,
+		        "passWord":passWord
+	        }
+        }).done(function (response) {
+            loginRespHandler(response);
+        }).fail(function () {
+            alert("未知错误，请稍后再试！")
+        })
+    }
+    /**
+     * 处理登录请求的响应值
+     */
+    function loginRespHandler(response) {
+        var err = response.status;
+        switch (err) {
+            case 0: {
+                showMsg('登录成功，即将跳转至主页', 'success');
+                setTimeout(function () {
+                    location.href="index.html";
+                },2400);
+                break;
+            }
+            case 3: {
+                showMsg('您已登录，无需再次登录', 'err');
+                break;
+            }
+            case 1:{
+                showMsg('用户名或密码错误', 'err');
+                break;
+            }
+            case 4:
+            case 5: {
+                showMsg('用户名或密码错误', 'err');
+                break;
+            }
+            default: {
+                showMsg('未知错误，请稍后再试', 'err');
+                break;
+            }
+        }
+    }
+</script>
+</body>
+</html>

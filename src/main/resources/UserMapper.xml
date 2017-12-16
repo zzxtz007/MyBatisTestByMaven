@@ -66,7 +66,10 @@
                 AND userCode = #{condition.userCode}
             </if>
             <if test="condition.userName !=null">
-                AND userName like "%"#{condition.userName}"%"
+                AND userName like #{condition.userName}"%"
+            </if>
+            <if test="condition.userPassword !=null">
+                AND userPassword = #{condition.userPassword}
             </if>
             <if test="condition.gender !=null">
                 AND gender = #{condition.gender}
@@ -88,7 +91,7 @@
         LIMIT #{startIndex},#{count};
     </select>
     <select id="count" resultType="int">
-        select count(id) from smbms_role
+        select count(id) from smbms_user
         <include refid="generic-where"/>
     </select>
 </mapper>

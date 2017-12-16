@@ -4,9 +4,7 @@
 	<meta charset="UTF-8">
 	<title>超市订单管理系统</title>
 	<link href="css/md-ui.css" rel="stylesheet">
-	<script src="js/jquery3.1.js"></script>
-	<script src="js/md-ui.js"></script>
-	<script src="js/generic.js"></script>
+	<link href="css/main.css" rel="stylesheet">
 	<style>
 		* {
 			margin: 0;
@@ -37,6 +35,57 @@
 		#lable-right {
 			float: right;
 		}
+
+		table {
+			width: 500px;
+			margin: 0 auto;
+		}
+
+		tr {
+			background-color: #4d90fe;
+			box-shadow: #cbe1dd 2px 2px 2px;
+			transition: all 300ms ease;
+		}
+
+		tr:hover {
+			background-color: black;
+			box-shadow: #cbe1dd 4px 4px 4px;
+		}
+
+		tr:hover .updateButton {
+			background: url(img/ic_update_white_24dp_2x.png) no-repeat center;
+			background-size: 20px 20px;
+		}
+
+		tr:hover .deleteButton {
+			background: url(img/ic_delete_white_24dp_2x.png) no-repeat center;
+			background-size: 20px 20px;
+		}
+
+		td {
+			text-align: center;
+			color: #ffffff;
+		}
+
+		.deleteButton {
+			width: 20px;
+			height: 24px;
+			background: url(img/ic_delete_black_24dp_2x.png) no-repeat center;
+			background-size: 20px 20px;
+			border: none;
+			cursor: pointer;
+			transition: all 400ms ease;
+		}
+
+		.updateButton {
+			width: 20px;
+			height: 24px;
+			background: url(img/ic_update_black_24dp_2x.png) no-repeat center;
+			background-size: 20px 20px;
+			border: none;
+			cursor: pointer;
+			transition: all 400ms ease;
+		}
 	</style>
 </head>
 <body>
@@ -63,28 +112,45 @@
 	<div class="md-ui">
 		<input class="md-ui" type="text" title="姓名" id="name">
 		<select id="role"></select>
-		<button class="md-ui">查询</button>
+		<button class="md-ui" onclick="search()">查询</button>
 	</div>
-	<div class="md-ui"><table></table></div>
+	<div class="md-ui">
+		<table></table>
+	</div>
 </div>
-</body>
+
+<div id="msg-box" class="msg-hide"></div>
+
+<script src="js/jquery3.1.js"></script>
+<script src="js/md-ui.js"></script>
+<script src="js/generic.js"></script>
 <script type="text/javascript">
+    var totalPage = 1;
+    var currentPage = 1;
+    var pageSize = 5;
+    var userName = $("#name").val();
+    var userRole = $("#role").val();
     var mi = new MdUi();
     mi.init();
 
     function showSelect(roles) {
-	    
+        var select = $("#role");
+        var option = $("<option value='' selected='selected'>--请选择--</option>");
+        select.append(option);
+        for (var role of roles) {
+            var option = $("<option value='" + role.id + "'>" + role.roleName + "</option>");
+            select.append(option)
+        }
     }
 
     /**
-     * 处理登录请求的响应值
+     * 处理select请求的响应值
      */
-    function SelectRespHandler(response) {
+    function selectRespHandler(response) {
         var status = response.status;
         switch (status) {
             case 0: {
                 //查询成功
-                console.log(response.roles);
                 showSelect(response.roles);
                 break;
             }
@@ -95,26 +161,159 @@
                 break;
             }
             default: {
-                showMsg('未知错误，请稍后再试', 'err');
+                showMsg('未知错误', 'err');
+                break;
+            }
+        }
+    }
+
+    function showTable(users) {
+        var table = $("table");
+        table.text("");
+        var tr = $("<tr></tr>");
+        table.append(tr);
+        td = $("<td>用户编码</td>");
+        tr.append(td);
+        td = $("<td>用户名称</td>");
+        tr.append(td);
+        td = $("<td>性别</td>");
+        tr.append(td);
+        td = $("<td>年龄</td>");
+        tr.append(td);
+        td = $("<td>电话</td>");
+        tr.append(td);
+        td = $("<td>用户角色</td>");
+        tr.append(td);
+        td = $("<td>操作</td>");
+        tr.append(td);
+        for (var user of users) {
+            var birthday = user.birthday;
+            var oldYear = parseInt(birthday.split(' ')[2]);
+            var now = new Date().getFullYear();
+            var age = now - oldYear;
+            tr = $("<tr id='" + user.id + "'></tr>");
+            table.append(tr);
+            var td = $("<td>" + user.userCode + "</td>");
+            tr.append(td);
+            td = $("<td>" + user.userName + "</td>");
+            tr.append(td);
+            var genderMap = [null, '男', '女'];
+            td = $("<td>" + genderMap[user.gender] + "</td>");
+            tr.append(td);
+            td = $("<td>" + age + "</td>");
+            tr.append(td);
+            td = $("<td>" + user.phone + "</td>");
+            tr.append(td);
+            td = $("<td>" + user.userRole.roleName + "</td>");
+            tr.append(td);
+            td = $("<td><button class='updateButton' onclick='updateCheck(this)'></button><button class='deleteButton' onclick='deleteCheck(this)'></button></td>");
+            tr.append(td);
+        }
+    }
+
+    /**
+     * 处理search请求的响应值
+     */
+    function searchRespHandler(response) {
+        var status = response.status;
+        switch (status) {
+            case 0: {
+                //查询成功
+                console.log(response.users);
+                showTable(response.users);
+                break;
+            }
+            case 1:
+            case 2:
+            case 3: {
+                showMsg('查询失败', 'err');
+                break;
+            }
+            default: {
+                showMsg('未知错误', 'err');
                 break;
             }
         }
     }
 
     initSelect();
+
     function initSelect() {
-	    $.ajax({
-			url:"/api/role/query",
-			type:"GET"
-	    }).done(function (response) {
-	        console.log(response);
-            SelectRespHandler(response);
-	    }).fail(function () {
-	        alert("发生未知错误！请稍后再试");
-	    })
+        $.ajax({
+            url: "/api/role/query",
+            type: "GET"
+        }).done(function (response) {
+            console.log(response);
+            selectRespHandler(response);
+        }).fail(function () {
+            alert("发生未知错误！请稍后再试");
+        })
     }
 
+    function totalPageRespHandler(response) {
+        var status = response.status;
+        switch (status) {
+            case 0: {
+                //查询成功
+                console.log(response.count);
+                totalPage = parseInt(response.count) % pageSize === 0 ? parseInt(response.count) / pageSize : parseInt(response.count) / pageSize + 1;
+                break;
+            }
+            case 1:
+            case 2:
+            case 3: {
+                showMsg('查询失败', 'err');
+                break;
+            }
+            default: {
+                showMsg('未知错误', 'err');
+                break;
+            }
+        }
+    }
 
+    function createTable(data) {
+        console.log(data);
+        $.ajax({
+            url: "/api/user/fuck",
+            type: "POST",
+            data: data
+        })
+            .done(function (response) {
+                searchRespHandler(response);
+            })
+            .fail(function () {
+                alert("发生未知错误！请稍后再试");
+            });
+    }
 
+    function search() {
+        userName = $("#name").val();
+        userRole = $("#role").val();
+        var data = {};
+        data["pageNum"] = currentPage;
+        data["pageSize"] = pageSize;
+        if (userName !== "") {
+            data['userName'] = userName;
+        }
+        if (userRole !== "") {
+            data['userRole'] = userRole;
+        }
+        console.log(data);
+        $.ajax({
+            url: "/api/user/Count",
+            type: "get",
+            data: data
+        })
+            .done(function (response) {
+                console.log(response);
+                totalPageRespHandler(response);
+            }).fail(function () {
+            alert("发生未知错误！请稍后再试");
+        });
+
+        createTable(data);
+    }
 </script>
+</body>
 </html>

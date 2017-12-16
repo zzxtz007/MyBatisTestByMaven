@@ -1,0 +1,35 @@
+/* 消息通知 */
+#msg-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 62px;
+    line-height: 62px;
+    font-size: 14px;
+    text-align: center;
+    color: #FFF;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+    z-index: 99999;
+    cursor: pointer;
+    -webkit-transition: all .3s, background-color 0s;
+    -moz-transition: all .3s, background-color 0s;
+    -o-transition: all .3s, background-color 0s;
+    transition: all .3s, background-color 0s;
+}
+
+#msg-box.msg-err {
+    background-color: #D44;
+}
+
+#msg-box.msg-success {
+    background-color: #5A5;
+}
+
+#msg-box.msg-hide {
+    -webkit-transform: translateY(-62px);
+    -moz-transform: translateY(-62px);
+    -ms-transform: translateY(-62px);
+    -o-transform: translateY(-62px);
+    transform: translateY(-62px);
+}

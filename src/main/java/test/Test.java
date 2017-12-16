@@ -2,24 +2,18 @@ package test;
 
 import org.apache.ibatis.session.SqlSession;
 import top.haha233.smbms.dal.UserMapper;
-import top.haha233.smbms.model.bo.RoleBo;
 import top.haha233.smbms.model.bo.UserBo;
 import top.haha233.smbms.model.po.UserPo;
-import top.haha233.smbms.service.impl.RoleServiceImpl;
-import top.haha233.smbms.service.impl.UserServiceImpl;
-import top.haha233.smbms.util.Response;
 import top.haha233.smbms.utils.MyBatisUtil;
-
-import javax.management.relation.Role;
 import java.util.List;
 
 public class Test {
 	public static void main(String[] args) {
 		UserPo u = new UserPo();
 //		u.setId(25);
-//		u.setUserCode("");
-		u.setUserName("谢");
-//		u.setUserPassword("123456");
+		u.setUserCode("admin");
+//		u.setUserName("谢");
+		u.setUserPassword("1234567");
 //		u.setUserRole(3);
 //		u.setGender(2);
 		query(u);
@@ -30,5 +24,11 @@ public class Test {
 		for (UserBo user : users) {
 			System.out.println(user.getUserName());
 		}
+		System.out.println(users.get(0));
+	}
+	private static void count(UserPo u){
+		SqlSession s = MyBatisUtil.createSqlSession();
+		int i = s.getMapper(UserMapper.class).count(u);
+		System.out.println(i);
 	}
 }

@@ -1,4 +1,9 @@
 /**
+ * 消息栏超时定时器
+ */
+var msgTimeout;
+
+/**
  * 弹出消息栏，显示指定消息内容
  *
  * @param content 消息内容，建议不超过22字（移动端最低可用宽度320px，仅能容纳22个14px的文字）
@@ -50,3 +55,10 @@ function showMsg(content, type) {
         }, 2000);
     }
 }
+
+$(function () {
+    // 消息栏点击关闭
+    $('#msg-box').on('click', function () {
+        $(this).addClass('msg-hide');
+    });
+});
